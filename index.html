@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Img2CADSeq">
+  <meta name="keywords" content="Boundary representation learning, CAD
+program modeling, Reverse engineering">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Img2CADSeq</title>
+
+  <style>
+      .arrow {
+        display: inline-block;
+        font-size: 40px; /* Adjust size as needed */
+        color: #555; /* Arrow color */
+        margin: 0 15px; /* Spacing around the arrow */
+      }
+
+      .arrow::before {
+        content: "\27A4"; /* Unicode character for a rightwards arrow with a triangle arrowhead */
+      }
+
+      .columns {
+      display: flex;
+      gap: 5px; /* Small gap between columns */
+      justify-content: center;
+      align-items: center;
+    }
+
+    .stl-viewer {
+      width: 100%;
+      max-width: 300px; /* Limit maximum width */
+      height: auto; /* Maintain aspect ratio */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin: 0 auto; /* Center the element */
+    }
+
+    model-viewer {
+      width: 100%; /* Make the 3D model viewer responsive */
+      height: auto; /* Maintain aspect ratio */
+    }
+
+    .tight-break {
+      display: block;
+      height: 0.25em;
+    }
+
+    .col-red {
+      color: #c62828;
+      font-weight: 600;
+    }
+
+    .col-blue {
+      color: #1565c0;
+      font-weight: 600;
+    }
+
+    .thumb-grid {
+      background: #fff;
+    }
+
+    .thumb-image {
+      width: 180px;
+      height: 180px;
+      object-fit: contain;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-gap-top {
+      margin-top: 64px;
+    }
+
+  </style>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/icon.png">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Img2CADSeq: Image-to-CAD Generation via Sequence-Based Diffusion
+            </h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Shiyu Tan</span>,
+            <span class="author-block">Zixuan Zhao<sup>&dagger;</sup></span>,
+            <span class="author-block">Hao Gao<sup>&dagger;</sup></span>,
+            <span class="author-block">Zhiheng Chen<sup>&dagger;</sup></span>,
+            <span class="author-block">Xiaolong Yin</span>,
+            <span class="author-block">Enya Shen<sup>*</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Tsinghua University</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <!-- <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span> -->
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2605.13293"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/Rilpraa0110/Img2CADSeq"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a> -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero teaser section-gap-top">
+  <div class="container is-max-desktop" style="text-align: center;">
+    <h2 class="title is-3">Teaser</h2>
+    <div class="teaser-image" style="display: inline-block; width: 100%; max-width: 1100px;">
+        <img src="./static/images/teaser.png" alt="Teaser Image" style="width: 100%; height: auto; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);">
+    </div>
+    <h2 class="subtitle has-text-centered" style="margin-top: 20px;">
+      Img2CADSeq is a sota BRep pipeline that outputs standardized STEP files. Shown are generations via:
+      <span class="tight-break"></span>
+      unconditional (<span class="col-red">Cols 1-3</span>), single-view image (<span class="col-blue">Cols 4-5</span>), and point cloud (<span class="col-blue">Col 6</span>) conditioning.
+    </h2>
+  </div>
+</section>
+
+<!-- Add this script to include the model-viewer library -->
+<script type="module" src="https://unpkg.com/@google/model-viewer@v1.9.2/dist/model-viewer.min.js"></script>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Boundary Representation (BRep) is the standard format for Computer-Aided Design (CAD), yet reconstructing high-quality BReps from single-view images remains challenging due to the complexity of topological constraints and operation sequences. 
+          </p>
+          <p>
+            We present Img2CADSeq, a multi-stage pipeline that overcomes these limitations by encoding CAD sequences into a three-level hierarchical codebook. Guided by an importance prioritization, this strategy values profiles over details, compressing long sequences into a stable discrete latent space. To bridge the modality gap, we leverage a coarse-to-fine point cloud intermediate, aligning 2D visual features with 3D CAD sequences via contrastive learning to condition a VQ-Diffusion model. 
+          </p>
+          <p>  
+            Supported by newly introduced CAD-220K and PrintCAD datasets, our approach ensures robust industrial domain adaptation. Extensive experiments demonstrate that Img2CADSeq significantly outperforms state-of-the-art methods, producing standard STEP files that can be directly used in commercial CAD software.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+  
+    <!-- Animation. -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+
+        <h2 class="title is-3 has-text-centered">CAD generation</h2>
+
+        <!-- Image-conditional CAD -->
+        <h3 class="title is-4 has-text-centered">Image-conditional CAD generation</h3>
+
+
+        <div class="columns is-vcentered is-mobile is-gapless thumb-grid"> <!-- Added is-gapless class -->
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/1.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/2.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/3.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/4.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        </div>
+
+
+        <div class="columns is-vcentered is-mobile is-gapless">
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/1_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/2_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/3_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/4_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        </div>
+
+        <div class="columns is-vcentered is-mobile is-gapless thumb-grid"> <!-- Added is-gapless class -->
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/5.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/6.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/7.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/8.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        </div>
+
+
+        <div class="columns is-vcentered is-mobile is-gapless">
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/5_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/6_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/7_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/8_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        </div>
+
+        <div class="columns is-vcentered is-mobile is-gapless thumb-grid"> <!-- Added is-gapless class -->
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/13.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/14.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/15.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/16.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        </div>
+
+
+        <div class="columns is-vcentered is-mobile is-gapless">
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/13_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/14_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/15_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/16_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        </div>
+
+        <div class="columns is-vcentered is-mobile is-gapless thumb-grid"> <!-- Added is-gapless class -->
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/9.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/10.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <img src="./static/img/12.png" alt="Teaser Image" class="thumb-image">
+          </div>
+        </div>
+
+
+        <div class="columns is-vcentered is-mobile is-gapless">
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/9_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/10_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+      
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/img/12_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="hero teaser section-gap-top">
+  <div class="container is-max-desktop" style="text-align: center;">
+    <h2 class="title is-3">Pipeline</h2>
+    <div class="teaser-image" style="display: inline-block; width: 100%; max-width: 1100px;">
+        <img src="./static/images/pipeline.png" alt="Teaser Image" style="width: 100%; height: auto; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);">
+    </div>
+    <div class="content has-text-justified">
+          <p>
+            <strong>Overview of the Img2CADSeq Framework.</strong> In the first stage, hierarchical sequence encoding represents CAD operations via a three-level codebook
+            into a discrete space. Then we lift the input image into a 3D point cloud using a tailored network trained jointly on both synthetic and real-world data types,
+            which is then refined by UA-DGCNN to sharpen edges and smooth surfaces. Finally, we employ contrastive learning to align the geometric embeddings with
+            the CAD latent space, guiding a VQ-Diffusion model to predict a valid CAD operation sequence to be compiled into a watertight BRep
+          </p>
+          
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+
+    <!-- Pc-conditional CAD -->
+        <h3 class="title is-4 has-text-centered">Point-cloud conditional CAD generation</h3>
+
+
+        <div class="columns is-vcentered is-mobile is-gapless">
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/pc/1_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/pc/2_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/pc/3_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/pc/4_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        </div>
+
+
+        <div class="columns is-vcentered is-mobile is-gapless">
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/1_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/2_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/3_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/4_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        </div>
+
+        <div class="columns is-vcentered is-mobile is-gapless">
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/pc/5_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/pc/6_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/pc/7_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/pc/8_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        </div>
+
+
+        <div class="columns is-vcentered is-mobile is-gapless">
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/5_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/6_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/7_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/8_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        </div>
+
+        <div class="columns is-vcentered is-mobile is-gapless">
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/pc/9_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/pc/10_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        </div>
+
+
+        <div class="columns is-vcentered is-mobile is-gapless">
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/9_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        
+          <div class="column stl-viewer" style="display: flex; justify-content: center; padding: 0;">
+            <model-viewer src="./static/pc/10_step.glb" alt="3D Model" auto-rotate camera-controls ar shadow-intensity="1" style="width: 200px; height: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            </model-viewer>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser section-gap-top">
+  <div class="container is-max-desktop" style="text-align: center;">
+    <h2 class="title is-3">Workflow</h2>
+    <div class="teaser-image" style="display: inline-block; width: 100%; max-width: 1100px;">
+        <img src="./static/images/sae_final.png" alt="Teaser Image" style="width: 100%; height: auto; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);">
+    </div>
+    <div class="content has-text-justified">
+          <p>
+            <strong>Workflow of Hierarchical Entity Construction.</strong> At the base level, the Curve-Cluster parameterizes geometric primitives, which form closed loops
+            in the Sketch-Patch. These loops are then lifted into 3D space via a normal vector and origin to perform extrusion and Boolean operations, resulting in an
+            Extrude-Block. Multiple blocks are finally assembled to yield the target solid. This process mirrors the construction history of standard CAD workflows,
+            preserving human design intent.
+          </p>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="hero teaser section-gap-top">
+  <div class="container is-max-desktop" style="text-align: center;">
+    <h2 class="title is-3">Dataset</h2>
+    <div class="teaser-image" style="display: inline-block; width: 100%; max-width: 1100px;">
+        <img src="./static/images/dataset.png" alt="Teaser Image" style="width: 100%; height: auto; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);">
+    </div>
+    <div class="content has-text-justified">
+          <p>
+            To address the scarcity of industrial data, a key contribution of our work lies in the combination of two distinct data
+            types: curated synthetic models (CAD-220K) and real-world captured objects (<strong>PrintCAD</strong>). By leveraging these two joint
+            data types, we train a network to generate intermediate point clouds. This combination explicitly bridges the sim-to-real
+            gap, enhancing the model’s generalization on mechanical parts.
+          </p>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{tan2026img2cadseq,
+  title={Img2CADSeq: Image-to-CAD Generation via Sequence-Based Diffusion},
+  author={Tan, Shiyu and Zhao, Zixuan and Gao, Hao and Chen, Zhiheng and Yin, Xiaolong and Shen, Enya},
+  journal={arXiv preprint arXiv:2605.13293},
+  year={2026}
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            Based on the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> website.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
