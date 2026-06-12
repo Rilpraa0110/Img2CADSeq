@@ -3,7 +3,6 @@
 
 [![Project Page](https://img.shields.io/badge/Project-Page-blue)](https://rilpraa0110.github.io/Img2CADSeq/)
 [![arXiv](https://img.shields.io/badge/arXiv-2605.13293-b31b1b.svg)](https://arxiv.org/abs/2605.13293)
-[![GitHub](https://img.shields.io/badge/GitHub-Code-black)](https://github.com/Rilpraa0110/Img2CADSeq)
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-orange)](https://huggingface.co/datasets/Rilpraatsy/img2cadseq)
 
 On the Way :)
