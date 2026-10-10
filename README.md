@@ -5,7 +5,6 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2605.13293-b31b1b.svg)](https://arxiv.org/abs/2605.13293)
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-orange)](https://huggingface.co/datasets/Rilpraatsy/img2cadseq)
 
-On the Way :)
 
 ## 📝 Citation
 
